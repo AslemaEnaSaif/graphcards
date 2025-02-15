@@ -30,12 +30,23 @@ export default function App() {
       },
     };
     if (containerRef.current !== null) {
+      fetchCards();
+
       setNetwork(new Network(containerRef.current, data, options));
     }
     if (network) {
       return () => network.destroy(); // Clean up the network when the component unmounts
     }
   }, [nodes]);
+
+  const BACKEND_URL = "http://localhost:4000";
+  const fetchCards = async () => {
+    if (BACKEND_URL) {
+      const response = await fetch(`${BACKEND_URL}/api/card/`);
+      const json = await response.json();
+      console.log(json);
+    }
+  };
 
   // const addCard = () => {
   //   // network.setData({ nodes: nodes2, edges });
@@ -49,27 +60,33 @@ export default function App() {
       <div className={"cardLab"}>
         <form>
           <div>
-            <label htmlFor="word">word</label>
-            <input type="text" id="word"></input>
-            <label htmlFor="type">type</label>
-            <select id="type">
-              <option>noun</option>
-              <option>verb</option>
-              <option>adjective</option>
-              <option>expression</option>
+            <input type="text" name="word" placeholder="word"></input>
+            <select name="type">
+              <option value="إسم">إسم</option>
+              <option value="فعل">فعل</option>
+              <option value="حرف">حرف</option>
+              <option value="عبارة">عبارة</option>
             </select>
           </div>
           <div>
-            <label htmlFor="translation">translation</label>
-            <input type="text" id="translation"></input>
+            <input
+              type="text"
+              name="translation"
+              placeholder="translation"
+            ></input>
           </div>
           <div>
-            <label htmlFor="example">Example</label>
-            <input type="text" id="example"></input>
+            <input type="text" name="example" placeholder="example"></input>
           </div>
           <div>
-            <label htmlFor="notes">notes</label>
-            <textarea id="notes"></textarea>
+            <textarea name="notes" placeholder="notes"></textarea>
+          </div>
+          <div>
+            <select name="groups" multiple>
+              <option value="option1">option1</option>
+              <option value="option2">option2</option>
+              <option value="option3">option3</option>
+            </select>
           </div>
           <div>
             <label htmlFor="link">links</label>
@@ -78,7 +95,8 @@ export default function App() {
                 <option value="">card1</option>
                 <option value="">card2</option>
               </select>
-              <input type="text" id="relation"></input>
+              <input type="text" name="relation"></input>
+              <button>+</button>
             </div>
           </div>
           <button>Create card</button>
