@@ -17,11 +17,16 @@ export async function createCard(request: Request, response: Response) {
 
     if (card) {
       for (const linkedCard of card.links) {
-        const edge = await Edge.create({
-          from: card._id,
-          to: linkedCard.linkedCardId,
-          label: linkedCard.label,
-        });
+        try {
+          await Edge.create({
+            from: card._id,
+            to: linkedCard.linkedCardId,
+            label: linkedCard.label,
+          });
+        } catch (error) {
+          console.log(error);
+          return response.status(400).json("edge could not be created");
+        }
       }
     }
     return response.status(200).json(card);
