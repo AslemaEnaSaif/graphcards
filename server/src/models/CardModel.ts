@@ -7,15 +7,20 @@ const cardSchema = new Schema({
   languageFrom: { type: String, required: true },
   front: {
     value: { type: String, required: true },
+    valueType: { type: String, required: true },
   },
   back: {
-    valueType: { type: String, required: true },
     value: { type: String, required: true },
     example: { type: String, required: true },
     notes: { type: String, required: false },
   },
-  tags: { type: [String], required: false },
-  difficulty: { type: Number, required: false },
+  groups: { type: [String], required: false },
+  links: {
+    type: [{ linkedCardId: mongoose.Types.ObjectId, label: String }],
+    ref: "Card",
+    required: true,
+  },
+  // difficulty: { type: Number, required: false },
 });
 
 export const Card = mongoose.model("Card", cardSchema);

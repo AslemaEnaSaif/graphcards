@@ -1,26 +1,29 @@
 import { Request, Response } from "express";
 import { Card } from "../models/CardModel";
-import { Deck } from "../models/DeckModel";
 import mongoose from "mongoose";
+import { Edge } from "../models/EdgeModel";
 
 export async function createCard(request: Request, response: Response) {
-  const { front, back, tags, difficulty } = request.body;
-  // const { deckId } = request.params;
-  // if (!mongoose.Types.ObjectId.isValid(deckId)) {
-  //   return response.status(404).json({ error: "deck Id not valid" });
-  // }
+  const { front, back, groups, links } = request.body;
+
   try {
     const card = await Card.create({
       languageFrom: "Tunisian",
       front,
       back,
-      tags,
+      groups,
+      links,
     });
 
-    // await Deck.findByIdAndUpdate(deckId, {
-    //   $push: { cards: card._id },
-    // });
-
+    if (card) {
+      for (const linkedCard of card.links) {
+        const edge = await Edge.create({
+          from: card._id,
+          to: linkedCard.linkedCardId,
+          label: linkedCard.label,
+        });
+      }
+    }
     return response.status(200).json(card);
   } catch (error) {
     console.log(error);
