@@ -5,9 +5,9 @@ const Schema = mongoose.Schema;
 const cardSchema = new Schema({
   // deck: { type: mongoose.Types.ObjectId, ref: "Deck", required: true },
   languageFrom: { type: String, required: true },
+  cardType: { type: String, required: true },
   front: {
     value: { type: String, required: true },
-    valueType: { type: String, required: true },
   },
   back: {
     value: { type: String, required: true },

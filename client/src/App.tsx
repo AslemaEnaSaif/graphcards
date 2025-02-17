@@ -1,13 +1,14 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { Edge, Network, Node } from "vis-network";
 import "./App.css";
-import { Card, TunisianValueTypes } from "./Types/types";
+import { Card } from "./Types/types";
+import CardLab from "./CardLab";
 
 export default function App() {
   const containerRef = useRef(null);
   const [network, setNetwork] = useState<Network | null>(null);
-
   const [cards, setCards] = useState<Card[]>([]);
+  const [selectedCard, setSelectedCard] = useState<Card | null>(null);
   const nodes: Node[] = useMemo(
     () =>
       cards.map((card) => ({
@@ -26,6 +27,30 @@ export default function App() {
   // );
 
   useEffect(() => {
+    console.log("new selected card", selectedCard);
+  }, [selectedCard]);
+
+  useEffect(() => {
+    if (!network) return;
+
+    const handleNodeSelection = () => {
+      const selectedNodes = network.getSelectedNodes();
+      console.log(selectedNodes);
+      if (cards) {
+        const selected = cards.find((card) => card.id === selectedNodes[0]);
+        if (selected) {
+          setSelectedCard(selected);
+        } else {
+          setSelectedCard(null);
+        }
+      }
+    };
+    network?.on("click", handleNodeSelection);
+
+    return () => network.off("selectNode", handleNodeSelection);
+  }, [network, cards]);
+
+  useEffect(() => {
     const edges: Edge[] = [];
 
     const data = { nodes, edges };
@@ -36,10 +61,12 @@ export default function App() {
       interaction: {
         hover: true,
       },
+      nodes: {},
     };
     if (containerRef.current !== null) {
       setNetwork(new Network(containerRef.current, data, options));
     }
+
     if (network) {
       return () => network.destroy(); // Clean up the network when the component unmounts
     }
@@ -53,12 +80,11 @@ export default function App() {
         const response = await fetch(`${BACKEND_URL}/api/card/`);
         const data = await response.json();
 
-        const formattedCards: Card[] = data.map((card: any) => ({
+        const formattedCards: Card[] = data.map((card) => ({
           ...card,
           id: card._id,
           _id: undefined,
         }));
-        console.log(cards);
         setCards(formattedCards);
       }
     };
@@ -66,59 +92,10 @@ export default function App() {
     fetchCards();
   }, []);
 
-  // const addCard = () => {
-  //   // network.setData({ nodes: nodes2, edges });
-  //   nodes.push({ id: "4", label: "card4" });
-  //   network2 && console.log(nodes);
-  // };
-
   return (
     <div className={"appContainer"}>
       <div ref={containerRef} className={"canvasContainer"}></div>
-      <div className={"cardLab"}>
-        <form>
-          <div>
-            <input type="text" name="word" placeholder="word"></input>
-            <select name="type">
-              {Object.values(TunisianValueTypes).map((valueType) => (
-                <option value={valueType}>{valueType}</option>
-              ))}
-            </select>
-          </div>
-          <div>
-            <input
-              type="text"
-              name="translation"
-              placeholder="translation"
-            ></input>
-          </div>
-          <div>
-            <input type="text" name="example" placeholder="example"></input>
-          </div>
-          <div>
-            <textarea name="notes" placeholder="notes"></textarea>
-          </div>
-          <div>
-            <select name="groups" multiple>
-              <option value="option1">option1</option>
-              <option value="option2">option2</option>
-              <option value="option3">option3</option>
-            </select>
-          </div>
-          <div>
-            <label htmlFor="link">links</label>
-            <div>
-              <select>
-                <option value="">card1</option>
-                <option value="">card2</option>
-              </select>
-              <input type="text" name="relation"></input>
-              <button>+</button>
-            </div>
-          </div>
-          <button>Create card</button>
-        </form>
-      </div>
+      <CardLab selectedCard={selectedCard} />
     </div>
   );
 }
