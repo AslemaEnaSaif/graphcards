@@ -1,15 +1,17 @@
-import { ChangeEvent, useCallback, useEffect, useRef, useState } from "react";
+import { ChangeEvent, useCallback, useEffect, useState } from "react";
 import {
   Card,
   CardInformation,
   emptyCardInfomation,
-  getCardFromCardInformation,
-  getCardInformationFromCard,
   TunisianCardTypes,
 } from "./Types/types";
 import { BACKEND_URL } from "./App";
 import { deepCopy } from "./utils/deepCopy";
 import styles from "./cardLab.module.css";
+import {
+  getCardFromCardInformation,
+  getCardInformationFromCard,
+} from "./utils/cardUtils";
 
 export default function CardLab({
   selectedCard,
@@ -26,18 +28,15 @@ export default function CardLab({
       : deepCopy<CardInformation>(emptyCardInfomation)
   );
 
-  console.log(emptyCardInfomation === cardInformation);
+  console.log("card Info", cardInformation);
 
   useEffect(() => {
-    console.log("empty card info is", emptyCardInfomation);
     setCardInformation(
       selectedCard
         ? getCardInformationFromCard(selectedCard)
         : deepCopy<CardInformation>(emptyCardInfomation)
     );
   }, [selectedCard]);
-
-  console.log("card Info", cardInformation);
 
   const updateCard = async (id: string, cardDb: Card) => {
     const response = await fetch(`${BACKEND_URL}/api/card/${id}`, {
@@ -104,6 +103,7 @@ export default function CardLab({
   const resetCardInformation = useCallback(() => {
     setCardInformation(deepCopy<CardInformation>(emptyCardInfomation));
   }, []);
+
   const handleReset = (e: React.MouseEvent<HTMLButtonElement>) => {
     e.preventDefault();
     resetCardInformation();
@@ -163,8 +163,6 @@ export default function CardLab({
     },
     [cardInformation]
   );
-
-  const cardTypeSelectRef = useRef(null);
 
   const dynamicFields = useCallback((): JSX.Element | null => {
     switch (cardType) {
@@ -249,7 +247,6 @@ export default function CardLab({
             className={styles.rtl}
           ></input>
           <select
-            ref={cardTypeSelectRef}
             name="cardType"
             onChange={handleFieldChange}
             value={cardInformation.cardType}
