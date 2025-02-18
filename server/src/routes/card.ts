@@ -1,6 +1,5 @@
 import express from "express";
-import { Card } from "../models/CardModel";
-import { Deck } from "../models/DeckModel";
+
 import {
   createCard,
   deleteCard,
@@ -18,4 +17,4 @@ cardRoutes.post("/", createCard);
 cardRoutes.get("/", getCards);
 cardRoutes.get("/:cardId", getCard);
 cardRoutes.delete("/:cardId", deleteCard);
-cardRoutes.patch("/:cardId", updateCard);
+cardRoutes.put("/:cardId", updateCard);

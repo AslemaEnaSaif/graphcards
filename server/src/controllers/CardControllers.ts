@@ -4,18 +4,18 @@ import mongoose from "mongoose";
 import { Edge } from "../models/EdgeModel";
 
 export async function createCard(request: Request, response: Response) {
-  const { front, back, groups, links } = request.body;
+  const { cardType, front, back, groups, links } = request.body;
 
   try {
     const card = await Card.create({
-      languageFrom: "Tunisian",
+      cardType,
       front,
       back,
       groups,
       links,
     });
 
-    if (card) {
+    if (card && card.links) {
       for (const linkedCard of card.links) {
         try {
           await Edge.create({
@@ -74,22 +74,27 @@ export async function updateCard(
   request: Request,
   response: Response
 ): Promise<Response> {
+  console.log("updating card");
   const { cardId } = request.params;
 
   if (!mongoose.Types.ObjectId.isValid(cardId)) {
     return response.status(404).json({ error: "Card Id not valid" });
   }
 
-  const card = await Card.findOneAndUpdate(
-    { _id: cardId },
-    { ...request.body }
-  );
+  try {
+    const card = await Card.findOneAndReplace(
+      { _id: cardId },
+      { ...request.body }
+    );
 
-  if (!card) {
-    return response.status(404).json({ error: "no such card" });
+    if (!card) {
+      return response.status(404).json({ error: "no such card" });
+    }
+    return response.status(200).json(card);
+  } catch (error) {
+    console.error(error);
+    return response.status(500).json({ error: "Server error" });
   }
-
-  return response.status(200).json(card);
 }
 
 export async function deleteCard(

@@ -98,7 +98,7 @@ export type CardInformation = {
 };
 
 export const emptyCardInfomation: CardInformation = {
-  id: "",
+  id: null,
   cardType: TunisianCardTypes.noun,
   front: {
     value: "",
@@ -120,7 +120,7 @@ export const emptyCardInfomation: CardInformation = {
 export function getCardInformationFromCard(card: Card): CardInformation {
   return {
     id: card.id,
-    cardType: card.cardType,
+    cardType: card.cardType || TunisianCardTypes.noun,
     front: {
       value: card.front.value,
     },
@@ -139,4 +139,77 @@ export function getCardInformationFromCard(card: Card): CardInformation {
     groups: card.groups,
     links: card.links,
   };
+}
+
+export function getCardFromCardInformation(
+  cardInformation: CardInformation
+): Card {
+  console.log("asba", cardInformation);
+  switch (cardInformation.cardType) {
+    case TunisianCardTypes.noun:
+      return {
+        id: cardInformation.id ? cardInformation.id : "new card", // not used when creating/updating a card anyways
+        cardType: cardInformation.cardType,
+        front: {
+          value: cardInformation.front.value,
+        },
+        back: {
+          value: cardInformation.back.value,
+          plural: cardInformation.back.pluralN,
+          example: cardInformation.back.example,
+          notes: cardInformation.back.notes,
+        },
+        groups: cardInformation.groups,
+        links: cardInformation.links,
+      };
+    case TunisianCardTypes.adjective:
+      return {
+        id: cardInformation.id,
+        cardType: cardInformation.cardType,
+        front: {
+          value: cardInformation.front.value,
+        },
+        back: {
+          value: cardInformation.back.value,
+          plural: cardInformation.back.pluralN,
+          fem: cardInformation.back.fem,
+          example: cardInformation.back.example,
+          notes: cardInformation.back.notes,
+        },
+        groups: cardInformation.groups,
+        links: cardInformation.links,
+      };
+    case TunisianCardTypes.verb:
+      return {
+        id: cardInformation.id,
+        cardType: cardInformation.cardType,
+        front: {
+          value: cardInformation.front.value,
+        },
+        back: {
+          value: cardInformation.back.value,
+          past: cardInformation.back.past,
+          imperative: cardInformation.back.imperative,
+          example: cardInformation.back.example,
+          notes: cardInformation.back.notes,
+        },
+        groups: cardInformation.groups,
+        links: cardInformation.links,
+      };
+    default:
+      return {
+        id: cardInformation.id,
+        cardType: cardInformation.cardType,
+        front: {
+          value: cardInformation.front.value,
+        },
+        back: {
+          value: cardInformation.back.value,
+          example: cardInformation.back.example,
+          notes: cardInformation.back.notes,
+        },
+        groups: cardInformation.groups,
+        links: cardInformation.links,
+      };
+  }
 }

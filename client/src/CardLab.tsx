@@ -1,11 +1,15 @@
-import { ChangeEvent, useRef, useState } from "react";
+import { ChangeEvent, useCallback, useEffect, useRef, useState } from "react";
 import {
   Card,
   CardInformation,
   emptyCardInfomation,
+  getCardFromCardInformation,
   getCardInformationFromCard,
   TunisianCardTypes,
 } from "./Types/types";
+import { BACKEND_URL } from "./App";
+import { deepCopy } from "./utils/deepCopy";
+import styles from "./cardLab.module.css";
 
 export default function CardLab({
   selectedCard,
@@ -19,113 +23,219 @@ export default function CardLab({
   const [cardInformation, setCardInformation] = useState<CardInformation>(
     selectedCard
       ? getCardInformationFromCard(selectedCard)
-      : emptyCardInfomation
+      : deepCopy<CardInformation>(emptyCardInfomation)
   );
 
-  const NounDynamicFields = () => {
-    return (
-      <div>
-        <input
-          type="text"
-          name="pluralN"
-          placeholder="plural"
-          onChange={handleFieldChange}
-          value={cardInformation.back.pluralN}
-        ></input>
-      </div>
+  console.log(emptyCardInfomation === cardInformation);
+
+  useEffect(() => {
+    console.log("empty card info is", emptyCardInfomation);
+    setCardInformation(
+      selectedCard
+        ? getCardInformationFromCard(selectedCard)
+        : deepCopy<CardInformation>(emptyCardInfomation)
     );
+  }, [selectedCard]);
+
+  console.log("card Info", cardInformation);
+
+  const updateCard = async (id: string, cardDb: Card) => {
+    const response = await fetch(`${BACKEND_URL}/api/card/${id}`, {
+      method: "PUT",
+      headers: {
+        "content-Type": "application/json",
+      },
+      body: JSON.stringify(cardDb),
+    });
+
+    if (!response.ok) {
+      throw new Error("could not update card");
+    }
   };
 
-  const AdjectiveDynamicFields = () => {
-    return (
-      <div>
-        <input
-          type="text"
-          name="fem"
-          placeholder="feminine"
-          onChange={handleFieldChange}
-          value={cardInformation.back.fem}
-        ></input>
-        <input
-          type="text"
-          name="pluralA"
-          placeholder="plural"
-          onChange={handleFieldChange}
-          value={cardInformation.back.pluralA}
-        ></input>
-      </div>
-    );
+  const createCard = async (cardDb: Card) => {
+    const response = await fetch(`${BACKEND_URL}/api/card`, {
+      method: "POST",
+      headers: {
+        "content-Type": "application/json",
+      },
+      body: JSON.stringify(cardDb),
+    });
+
+    if (!response.ok) {
+      throw new Error("could not create card");
+    }
+    resetCardInformation();
   };
 
-  const VerbDynamicFields = () => {
-    return (
-      <div>
-        <input
-          type="text"
-          name="past"
-          placeholder="past"
-          onChange={handleFieldChange}
-          value={cardInformation.back.past}
-        ></input>
-        <input
-          type="text"
-          name="imperative"
-          placeholder="imperative"
-          onChange={handleFieldChange}
-          value={cardInformation.back.imperative}
-        ></input>
-      </div>
-    );
-  };
+  const deleteCard = async (id: string) => {
+    const response = await fetch(`${BACKEND_URL}/api/card/${id}`, {
+      method: "DELETE",
+      headers: {
+        "content-Type": "application/json",
+      },
+    });
 
-  const dynamicFields = (): JSX.Element | null => {
-    switch (cardType) {
-      case TunisianCardTypes.noun:
-        return <NounDynamicFields />;
-      case TunisianCardTypes.adjective:
-        return <AdjectiveDynamicFields />;
-      case TunisianCardTypes.verb:
-        return <VerbDynamicFields />;
-      default:
-        return null;
+    if (!response.ok) {
+      throw new Error("could not delete card");
     }
   };
 
   const handleSubmit = (e: React.MouseEvent<HTMLButtonElement>) => {
     e.preventDefault();
+    const cardDb: Card = getCardFromCardInformation(cardInformation);
+    console.log("cardDb is", cardDb);
+    if (cardInformation.id) {
+      updateCard(cardInformation.id, cardDb);
+    } else {
+      createCard(cardDb);
+    }
+    resetCardInformation();
   };
 
-  const handleFieldChange = (
-    e: ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>
-  ) => {
-    const { name, value } = e.target;
-    const newCardInformation = { ...cardInformation };
-    switch (name) {
-      case "word":
-        newCardInformation.front.value = value;
-        setCardInformation(newCardInformation);
-        break;
-      case "cardType":
-        newCardInformation.cardType = value as TunisianCardTypes;
-        setCardType(value as TunisianCardTypes);
-        setCardInformation(newCardInformation);
-        break;
-      case "translation":
-        newCardInformation.back.value = value;
-        setCardInformation(newCardInformation);
-        break;
-      case "example":
-        newCardInformation.back.example = value;
-        setCardInformation(newCardInformation);
-        break;
-      case "notes":
-        newCardInformation.back.notes = value;
-        setCardInformation(newCardInformation);
-        break;
+  const handleDelete = async (e: React.MouseEvent<HTMLButtonElement>) => {
+    e.preventDefault();
+    if (cardInformation.id) {
+      await deleteCard(cardInformation.id);
+      resetCardInformation();
     }
   };
 
+  const resetCardInformation = useCallback(() => {
+    setCardInformation(deepCopy<CardInformation>(emptyCardInfomation));
+  }, []);
+  const handleReset = (e: React.MouseEvent<HTMLButtonElement>) => {
+    e.preventDefault();
+    resetCardInformation();
+  };
+
+  const handleFieldChange = useCallback(
+    (
+      e: ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>
+    ) => {
+      const { name, value } = e.target;
+      const newCardInformation = { ...cardInformation };
+      switch (name) {
+        case "word":
+          newCardInformation.front.value = value;
+          setCardInformation(newCardInformation);
+          break;
+        case "cardType":
+          newCardInformation.cardType = value as TunisianCardTypes;
+          setCardType(value as TunisianCardTypes);
+          setCardInformation(newCardInformation);
+          break;
+        case "translation":
+          newCardInformation.back.value = value;
+          setCardInformation(newCardInformation);
+          break;
+        case "example":
+          newCardInformation.back.example = value;
+          setCardInformation(newCardInformation);
+          break;
+        case "notes":
+          newCardInformation.back.notes = value;
+          setCardInformation(newCardInformation);
+          break;
+        case "pluralN":
+          newCardInformation.back.pluralN = value;
+          setCardInformation(newCardInformation);
+          break;
+        case "pluralA":
+          newCardInformation.back.pluralA = value;
+          setCardInformation(newCardInformation);
+          break;
+        case "fem":
+          newCardInformation.back.fem = value;
+          setCardInformation(newCardInformation);
+          break;
+        case "past":
+          newCardInformation.back.past = value;
+          setCardInformation(newCardInformation);
+          break;
+        case "imperative":
+          newCardInformation.back.imperative = value;
+          setCardInformation(newCardInformation);
+          break;
+        default:
+          throw new Error(`Unhandled field name ${value}`);
+      }
+    },
+    [cardInformation]
+  );
+
   const cardTypeSelectRef = useRef(null);
+
+  const dynamicFields = useCallback((): JSX.Element | null => {
+    switch (cardType) {
+      case TunisianCardTypes.noun:
+        return (
+          <div>
+            <input
+              type="text"
+              name="pluralN"
+              placeholder="plural"
+              onChange={handleFieldChange}
+              value={cardInformation.back.pluralN}
+              className={styles.rtl}
+            ></input>
+          </div>
+        );
+      case TunisianCardTypes.adjective:
+        return (
+          <div>
+            <input
+              type="text"
+              name="fem"
+              placeholder="feminine"
+              onChange={handleFieldChange}
+              value={cardInformation.back.fem}
+              className={styles.rtl}
+            ></input>
+            <input
+              type="text"
+              name="pluralA"
+              placeholder="plural"
+              onChange={handleFieldChange}
+              value={cardInformation.back.pluralA}
+              className={styles.rtl}
+            ></input>
+          </div>
+        );
+      case TunisianCardTypes.verb:
+        return (
+          <div>
+            <input
+              type="text"
+              name="past"
+              placeholder="past"
+              onChange={handleFieldChange}
+              value={cardInformation.back.past}
+              className={styles.rtl}
+            ></input>
+            <input
+              type="text"
+              name="imperative"
+              placeholder="imperative"
+              onChange={handleFieldChange}
+              value={cardInformation.back.imperative}
+              className={styles.rtl}
+            ></input>
+          </div>
+        );
+      default:
+        return null;
+    }
+  }, [
+    cardInformation.back.fem,
+    cardInformation.back.imperative,
+    cardInformation.back.past,
+    cardInformation.back.pluralA,
+    cardInformation.back.pluralN,
+    cardType,
+    handleFieldChange,
+  ]);
+
   return (
     <div className={"cardLab"}>
       <form>
@@ -136,6 +246,7 @@ export default function CardLab({
             placeholder="word"
             onChange={handleFieldChange}
             value={cardInformation.front.value}
+            className={styles.rtl}
           ></input>
           <select
             ref={cardTypeSelectRef}
@@ -167,6 +278,7 @@ export default function CardLab({
             placeholder="example"
             onChange={handleFieldChange}
             value={cardInformation.back.example}
+            className={styles.rtl}
           ></input>
         </div>
         <div>
@@ -196,14 +308,16 @@ export default function CardLab({
             <button>+</button>
           </div>
         </div>
-        {selectedCard == null ? (
-          <button onClick={handleSubmit}>Create card</button>
-        ) : (
-          <>
-            <button>save card</button>
-            <button>delete card</button>
-          </>
-        )}
+        <>
+          <button onClick={handleSubmit}>
+            {selectedCard ? "Save Card" : "Create card"}
+          </button>
+          {selectedCard ? (
+            <button onClick={handleDelete}>Delete Card </button>
+          ) : (
+            <button onClick={handleReset}>reset fields </button>
+          )}
+        </>
       </form>
     </div>
   );

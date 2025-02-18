@@ -4,6 +4,8 @@ import "./App.css";
 import { Card } from "./Types/types";
 import CardLab from "./CardLab";
 
+export const BACKEND_URL = "http://localhost:4000";
+
 export default function App() {
   const containerRef = useRef(null);
   const [network, setNetwork] = useState<Network | null>(null);
@@ -27,15 +29,10 @@ export default function App() {
   // );
 
   useEffect(() => {
-    console.log("new selected card", selectedCard);
-  }, [selectedCard]);
-
-  useEffect(() => {
     if (!network) return;
 
     const handleNodeSelection = () => {
       const selectedNodes = network.getSelectedNodes();
-      console.log(selectedNodes);
       if (cards) {
         const selected = cards.find((card) => card.id === selectedNodes[0]);
         if (selected) {
@@ -56,7 +53,14 @@ export default function App() {
     const data = { nodes, edges };
     const options = {
       physics: {
-        enabled: false,
+        enabled: true,
+        solver: "forceAtlas2Based", // Alternative: barnesHut, repulsion
+        forceAtlas2Based: {
+          gravitationalConstant: -20,
+          centralGravity: 0.01,
+          springLength: 100,
+          springConstant: 0.8,
+        },
       },
       interaction: {
         hover: true,
@@ -71,8 +75,6 @@ export default function App() {
       return () => network.destroy(); // Clean up the network when the component unmounts
     }
   }, [nodes]);
-
-  const BACKEND_URL = "http://localhost:4000";
 
   useEffect(() => {
     const fetchCards = async () => {
@@ -92,10 +94,17 @@ export default function App() {
     fetchCards();
   }, []);
 
+  const doTest = () => {
+    console.log("hello");
+  };
+
   return (
-    <div className={"appContainer"}>
-      <div ref={containerRef} className={"canvasContainer"}></div>
-      <CardLab selectedCard={selectedCard} />
-    </div>
+    <>
+      {/* <button onClick={doTest}>test buton</button> */}
+      <div className={"appContainer"}>
+        <div ref={containerRef} className={"canvasContainer"}></div>
+        <CardLab selectedCard={selectedCard} />
+      </div>
+    </>
   );
 }
