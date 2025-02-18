@@ -164,7 +164,7 @@ export function getCardFromCardInformation(
       };
     case TunisianCardTypes.adjective:
       return {
-        id: cardInformation.id,
+        id: cardInformation.id ? cardInformation.id : "new card", // not used when creating/updating a card anyways
         cardType: cardInformation.cardType,
         front: {
           value: cardInformation.front.value,
@@ -181,7 +181,7 @@ export function getCardFromCardInformation(
       };
     case TunisianCardTypes.verb:
       return {
-        id: cardInformation.id,
+        id: cardInformation.id ? cardInformation.id : "new card", // not used when creating/updating a card anyways,
         cardType: cardInformation.cardType,
         front: {
           value: cardInformation.front.value,
@@ -198,7 +198,7 @@ export function getCardFromCardInformation(
       };
     default:
       return {
-        id: cardInformation.id,
+        id: cardInformation.id ? cardInformation.id : "new card", // not used when creating/updating a card anyways,
         cardType: cardInformation.cardType,
         front: {
           value: cardInformation.front.value,
@@ -213,3 +213,21 @@ export function getCardFromCardInformation(
       };
   }
 }
+
+export type CardApiData = {
+  _id: string;
+  cardType: TunisianCardTypes;
+  front: {
+    value: string;
+  };
+  back: {
+    value: string;
+    example: string;
+    notes?: string;
+  };
+  groups: string[];
+  links: {
+    linkedCardId: string;
+    label: string;
+  }[];
+};

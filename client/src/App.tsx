@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { Edge, Network, Node } from "vis-network";
 import "./App.css";
-import { Card } from "./Types/types";
+import { Card, CardsApiData } from "./Types/types";
 import CardLab from "./CardLab";
 
 export const BACKEND_URL = "http://localhost:4000";
@@ -80,8 +80,8 @@ export default function App() {
     const fetchCards = async () => {
       if (BACKEND_URL) {
         const response = await fetch(`${BACKEND_URL}/api/card/`);
-        const data = await response.json();
-
+        const data: CardsApiData[] = await response.json();
+        console.log("data is2", data);
         const formattedCards: Card[] = data.map((card) => ({
           ...card,
           id: card._id,
@@ -94,9 +94,9 @@ export default function App() {
     fetchCards();
   }, []);
 
-  const doTest = () => {
-    console.log("hello");
-  };
+  // const doTest = () => {
+  //   console.log("hello");
+  // };
 
   return (
     <>
