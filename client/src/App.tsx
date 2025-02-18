@@ -4,7 +4,7 @@ import "./App.css";
 import { Card, CardApiData } from "./Types/types";
 import CardLab from "./CardLab";
 
-export const BACKEND_URL = "http://localhost:4000";
+export const BACKEND_URL = import.meta.env.VITE_BACKEND_URL;
 
 export default function App() {
   const containerRef = useRef(null);
