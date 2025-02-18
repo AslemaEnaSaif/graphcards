@@ -7,6 +7,7 @@ export enum TunisianCardTypes {
 }
 
 export interface BaseCard {
+  _id: string; //disgusting, fix asap
   id: string;
   cardType: TunisianCardTypes;
   front: {
@@ -148,6 +149,7 @@ export function getCardFromCardInformation(
   switch (cardInformation.cardType) {
     case TunisianCardTypes.noun:
       return {
+        _id: "asba",
         id: cardInformation.id ? cardInformation.id : "new card", // not used when creating/updating a card anyways
         cardType: cardInformation.cardType,
         front: {
@@ -164,6 +166,7 @@ export function getCardFromCardInformation(
       };
     case TunisianCardTypes.adjective:
       return {
+        _id: "asba",
         id: cardInformation.id ? cardInformation.id : "new card", // not used when creating/updating a card anyways
         cardType: cardInformation.cardType,
         front: {
@@ -181,6 +184,7 @@ export function getCardFromCardInformation(
       };
     case TunisianCardTypes.verb:
       return {
+        _id: "asba",
         id: cardInformation.id ? cardInformation.id : "new card", // not used when creating/updating a card anyways,
         cardType: cardInformation.cardType,
         front: {
@@ -198,6 +202,7 @@ export function getCardFromCardInformation(
       };
     default:
       return {
+        _id: "asba",
         id: cardInformation.id ? cardInformation.id : "new card", // not used when creating/updating a card anyways,
         cardType: cardInformation.cardType,
         front: {
@@ -213,21 +218,3 @@ export function getCardFromCardInformation(
       };
   }
 }
-
-export type CardApiData = {
-  _id: string;
-  cardType: TunisianCardTypes;
-  front: {
-    value: string;
-  };
-  back: {
-    value: string;
-    example: string;
-    notes?: string;
-  };
-  groups: string[];
-  links: {
-    linkedCardId: string;
-    label: string;
-  }[];
-};

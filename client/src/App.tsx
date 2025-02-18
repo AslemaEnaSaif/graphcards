@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { Edge, Network, Node } from "vis-network";
 import "./App.css";
-import { Card, CardsApiData } from "./Types/types";
+import { Card } from "./Types/types";
 import CardLab from "./CardLab";
 
 export const BACKEND_URL = "http://localhost:4000";
@@ -80,12 +80,11 @@ export default function App() {
     const fetchCards = async () => {
       if (BACKEND_URL) {
         const response = await fetch(`${BACKEND_URL}/api/card/`);
-        const data: CardsApiData[] = await response.json();
-        console.log("data is2", data);
+        //disgusting, fix asap
+        const data = (await response.json()) as unknown as Card[];
         const formattedCards: Card[] = data.map((card) => ({
           ...card,
           id: card._id,
-          _id: undefined,
         }));
         setCards(formattedCards);
       }
