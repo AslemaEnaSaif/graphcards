@@ -18,15 +18,13 @@ export default function CardLab({
 }: {
   selectedCard: Card | null;
 }) {
-  const [cardType, setCardType] = useState<TunisianCardTypes>(
-    selectedCard ? selectedCard.cardType : TunisianCardTypes.noun
-  );
-
   const [cardInformation, setCardInformation] = useState<CardInformation>(
     selectedCard
       ? getCardInformationFromCard(selectedCard)
       : deepCopy<CardInformation>(emptyCardInfomation)
   );
+
+  const cardType = cardInformation.cardType;
 
   console.log("card Info", cardInformation);
 
@@ -122,7 +120,6 @@ export default function CardLab({
           break;
         case "cardType":
           newCardInformation.cardType = value as TunisianCardTypes;
-          setCardType(value as TunisianCardTypes);
           setCardInformation(newCardInformation);
           break;
         case "translation":

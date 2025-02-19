@@ -15,10 +15,40 @@ export default function App() {
     () =>
       cards.map((card) => ({
         id: card.id,
-        label: card.front.value,
+
+        shape: "custom",
+        ctxRenderer: ({
+          ctx,
+          x,
+          y,
+          id,
+          state: { selected: selected, hover: hover },
+        }) => {
+          const width = 120;
+          const height = 60;
+
+          ctx.fillStyle = hover ? "#ddd" : "#f0f0f0";
+          ctx.fillRect(x - width / 2, y - height / 2, width, height);
+
+          ctx.strokeStyle = selected ? "#ff0000" : "#333";
+          ctx.strokeRect(x - width / 2, y - height / 2, width, height);
+
+          ctx.fillStyle = "#000";
+          ctx.font = "14px Arial";
+          ctx.textAlign = "center";
+          ctx.fillText(card.front.value, x, y - 10);
+          ctx.fillText(card.back.example, x, y + 5);
+          ctx.fillText("Footer", x, y + 20);
+
+          return { drawExternal: false };
+        },
       })),
     [cards]
   );
+
+  const testNode: Node = {
+    id: "1",
+  };
 
   useEffect(() => {
     const fetchCards = async () => {
@@ -56,7 +86,7 @@ export default function App() {
       interaction: {
         hover: true,
       },
-      nodes: {},
+      nodes: { shape: "box" },
     };
     if (containerRef.current !== null) {
       setNetwork(new Network(containerRef.current, data, options));
