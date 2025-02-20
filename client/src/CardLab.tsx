@@ -26,8 +26,6 @@ export default function CardLab({
 
   const cardType = cardInformation.cardType;
 
-  console.log("card Info", cardInformation);
-
   useEffect(() => {
     setCardInformation(
       selectedCard
@@ -232,7 +230,7 @@ export default function CardLab({
   ]);
 
   return (
-    <div className={"cardLab"}>
+    <div className={"cardLabContainer jumpAnimation"}>
       <form>
         <div>
           <input

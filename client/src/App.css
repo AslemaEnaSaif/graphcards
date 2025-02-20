@@ -3,16 +3,44 @@
   height: 100vh;
   display: flex;
   background-color: rgb(170, 230, 230);
+  position: relative;
+  overflow: hidden;
 }
 
 .canvasContainer {
-  flex-basis: 70%;
+  flex: 1;
   box-sizing: border-box;
   height: 100%;
   border: solid 1px black;
+  transition: flex 0.4s ease-in-out;
 }
 
-.cardLab {
-  flex-basis: 30%;
-  background-color: rgb(230, 201, 201);
+.cardLabContainer {
+  width: 60%;
+  aspect-ratio: 5/3;
+  /* min-height: 25em; */
+
+  background: #ddd;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+}
+
+.jumpAnimation {
+  animation: jump 0.3s ease-in-out forwards; /* Apply jump animation for 3 seconds */
+}
+
+@keyframes jump {
+  0% {
+    transform: translate(-50%, 100%);
+  }
+
+  50% {
+    transform: translate(-50%, -55%); /* Move up */
+  }
+
+  100% {
+    transform: translate(-50%, -50%);
+  }
 }
