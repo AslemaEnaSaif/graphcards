@@ -7,7 +7,7 @@ import {
 } from "./Types/types";
 import { BACKEND_URL } from "./App";
 import { deepCopy } from "./utils/deepCopy";
-import styles from "./cardLab.module.css";
+import styles from "./cardLab.module.scss";
 import {
   getCardFromCardInformation,
   getCardInformationFromCard,
@@ -163,9 +163,11 @@ export default function CardLab({
     switch (cardType) {
       case TunisianCardTypes.noun:
         return (
-          <div>
+          <div className={styles.fieldContainer}>
+            <label htmlFor="pluralN">Plural</label>
             <input
               type="text"
+              id="pluralN"
               name="pluralN"
               placeholder="plural"
               onChange={handleFieldChange}
@@ -176,45 +178,61 @@ export default function CardLab({
         );
       case TunisianCardTypes.adjective:
         return (
-          <div>
-            <input
-              type="text"
-              name="fem"
-              placeholder="feminine"
-              onChange={handleFieldChange}
-              value={cardInformation.back.fem}
-              className={styles.rtl}
-            ></input>
-            <input
-              type="text"
-              name="pluralA"
-              placeholder="plural"
-              onChange={handleFieldChange}
-              value={cardInformation.back.pluralA}
-              className={styles.rtl}
-            ></input>
-          </div>
+          <>
+            <div className={styles.fieldContainer}>
+              <label htmlFor="feminine">feminine</label>
+              <input
+                type="text"
+                id="feminine"
+                name="fem"
+                placeholder="feminine"
+                onChange={handleFieldChange}
+                value={cardInformation.back.fem}
+                className={styles.rtl}
+              ></input>
+            </div>
+            <div className={styles.fieldContainer}>
+              <label htmlFor="pluralA">Plural</label>
+              <input
+                type="text"
+                name="pluralA"
+                id="pluralA"
+                placeholder="plural"
+                onChange={handleFieldChange}
+                value={cardInformation.back.pluralA}
+                className={styles.rtl}
+              ></input>
+            </div>
+          </>
         );
       case TunisianCardTypes.verb:
         return (
-          <div>
-            <input
-              type="text"
-              name="past"
-              placeholder="past"
-              onChange={handleFieldChange}
-              value={cardInformation.back.past}
-              className={styles.rtl}
-            ></input>
-            <input
-              type="text"
-              name="imperative"
-              placeholder="imperative"
-              onChange={handleFieldChange}
-              value={cardInformation.back.imperative}
-              className={styles.rtl}
-            ></input>
-          </div>
+          <>
+            <div className={styles.fieldContainer}>
+              <label htmlFor="past">Past</label>
+              <input
+                type="text"
+                name="past"
+                id="past"
+                placeholder="past"
+                onChange={handleFieldChange}
+                value={cardInformation.back.past}
+                className={styles.rtl}
+              ></input>
+            </div>
+            <div className={styles.fieldContainer}>
+              <label htmlFor="imperative">Imperative</label>
+              <input
+                id="imperative"
+                type="text"
+                name="imperative"
+                placeholder="imperative"
+                onChange={handleFieldChange}
+                value={cardInformation.back.imperative}
+                className={styles.rtl}
+              ></input>
+            </div>
+          </>
         );
       default:
         return null;
@@ -230,87 +248,101 @@ export default function CardLab({
   ]);
 
   return (
-    <div className={"cardLabContainer jumpAnimation"}>
-      <form>
-        <div>
-          <input
-            type="text"
-            name="word"
-            placeholder="word"
-            onChange={handleFieldChange}
-            value={cardInformation.front.value}
-            className={styles.rtl}
-          ></input>
-          <select
-            name="cardType"
-            onChange={handleFieldChange}
-            value={cardInformation.cardType}
-          >
-            {Object.values(TunisianCardTypes).map((valueType) => (
-              <option key={valueType} value={valueType}>
-                {valueType}
-              </option>
-            ))}
-          </select>
-        </div>
-        {dynamicFields()}
-        <div>
-          <input
-            type="text"
-            name="translation"
-            placeholder="translation"
-            onChange={handleFieldChange}
-            value={cardInformation.back.value}
-          ></input>
-        </div>
-        <div>
-          <input
-            type="text"
-            name="example"
-            placeholder="example"
-            onChange={handleFieldChange}
-            value={cardInformation.back.example}
-            className={styles.rtl}
-          ></input>
-        </div>
-        <div>
-          <textarea
-            name="notes"
-            placeholder="notes"
-            onChange={handleFieldChange}
-            value={cardInformation.back.notes}
-          ></textarea>
-        </div>
-        <div>
-          <label htmlFor="groups">groups</label>
-          <select name="groups" multiple>
-            <option value="option1">option1</option>
-            <option value="option2">option2</option>
-            <option value="option3">option3</option>
-          </select>
-        </div>
-        <div>
-          <label htmlFor="link">links</label>
-          <div>
-            <select>
-              <option value="">card1</option>
-              <option value="">card2</option>
-            </select>
-            <input type="text" name="relation"></input>
-            <button>+</button>
+    <div className={`${styles.cardLabContainer} ${styles.jumpAnimation}`}>
+      <div className={styles.formContainer}>
+        <form>
+          <div className={styles.fieldContainer}>
+            <label htmlFor="cardType">Card Type</label>
+            <div>
+              <select
+                className={styles.cardType}
+                name="cardType"
+                id="cardType"
+                onChange={handleFieldChange}
+                value={cardInformation.cardType}
+              >
+                {Object.values(TunisianCardTypes).map((valueType) => (
+                  <option key={valueType} value={valueType}>
+                    {valueType}
+                  </option>
+                ))}
+              </select>
+            </div>
           </div>
-        </div>
-        <>
-          <button onClick={handleSubmit}>
-            {selectedCard ? "Save Card" : "Create card"}
-          </button>
-          {selectedCard ? (
-            <button onClick={handleDelete}>Delete Card </button>
-          ) : (
-            <button onClick={handleReset}>reset fields </button>
-          )}
-        </>
-      </form>
+
+          <div className={styles.fieldContainer}>
+            <label htmlFor="word">Word</label>
+            <input
+              type="text"
+              id="word"
+              name="word"
+              placeholder="word"
+              onChange={handleFieldChange}
+              value={cardInformation.front.value}
+              className={styles.rtl}
+            ></input>
+          </div>
+
+          {dynamicFields()}
+          <div className={styles.fieldContainer}>
+            <label htmlFor="translation">Translation</label>
+            <input
+              type="text"
+              name="translation"
+              id="translation"
+              placeholder="translation"
+              onChange={handleFieldChange}
+              value={cardInformation.back.value}
+            ></input>
+          </div>
+          <div className={styles.fieldContainer}>
+            <label htmlFor="example">Example</label>
+            <input
+              type="text"
+              name="example"
+              id="example"
+              placeholder="example"
+              onChange={handleFieldChange}
+              value={cardInformation.back.example}
+              className={styles.rtl}
+            ></input>
+          </div>
+          <div className={styles.fieldContainer}>
+            <label htmlFor="notes">Notes</label>
+            <textarea
+              name="notes"
+              placeholder="notes"
+              id="notes"
+              onChange={handleFieldChange}
+              value={cardInformation.back.notes}
+            ></textarea>
+          </div>
+          <div className={styles.fieldContainer}>
+            <label htmlFor="linkedCards">Linked Cards</label>
+
+            <select name="linkedCards">
+              <option value="option1">option1</option>
+              <option value="option2">option2</option>
+              <option value="option3">option3</option>
+            </select>
+          </div>
+          <div className={`${styles.fieldContainer} ${styles.boxContainer} `}>
+            <label htmlFor="linkedCards"></label>
+            <div className={styles.linkedCardsBox}></div>
+          </div>
+
+          <>
+            <button onClick={handleSubmit}>
+              {selectedCard ? "Save Card" : "Create card"}
+            </button>
+            {selectedCard ? (
+              <button onClick={handleDelete}>Delete Card </button>
+            ) : (
+              <button onClick={handleReset}>reset fields </button>
+            )}
+          </>
+        </form>
+      </div>
     </div>
   );
 }

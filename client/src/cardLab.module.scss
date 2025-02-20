@@ -1,0 +1,111 @@
+.cardLabContainer {
+  aspect-ratio: 5/3;
+  overflow: scroll;
+  scrollbar-width: none; /* For Firefox */
+  -ms-overflow-style: none; /* For Internet Explorer and older Edge */
+  background: #fcfcfc;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: min(65vw, 60em);
+
+  box-sizing: border-box;
+  padding: 2rem;
+  border: 0.125rem solid var(--black);
+  border-radius: 1.5rem;
+  box-shadow: 2px 2px 0 1px var(--black);
+
+  display: flex;
+  justify-content: center;
+  transition: all 0.3s ease; // Smooth transition on size change
+}
+
+.jumpAnimation {
+  animation: jump 0.3s ease-in-out forwards; /* Apply jump animation for 3 seconds */
+}
+
+@keyframes jump {
+  0% {
+    transform: translate(-50%, 100%);
+  }
+
+  50% {
+    transform: translate(-50%, -55%); /* Move up */
+  }
+
+  100% {
+    transform: translate(-50%, -50%);
+  }
+}
+
+/* Make it larger on smaller screens to conserve the card shape */
+@media (max-width: 768px) {
+  .cardLabContainer {
+    width: 80vw; /* Takes more width on smaller screens */
+  }
+}
+
+@media (max-width: 480px) {
+  .cardLabContainer {
+    width: 95vw; /* Almost full width for very small screens */
+    aspect-ratio: initial; // if card template has few fields so not too much scrolling keep the original card ratio
+  }
+}
+
+.rtl {
+  direction: rtl;
+}
+
+.formContainer {
+  width: 70%;
+}
+
+.boxContainer {
+  padding-top: 0px !important;
+}
+
+.fieldContainer {
+  display: flex;
+  gap: 1rem;
+  padding: 0.5rem 0rem;
+  align-items: center;
+  width: 100%;
+
+  label {
+    font-weight: 700;
+    flex-basis: 12rem;
+    text-align: right;
+  }
+
+  div,
+  select,
+  textarea,
+  input {
+    flex-basis: 20rem;
+  }
+  select,
+  textarea,
+  input {
+    box-sizing: border-box;
+    width: 100%;
+    padding: 0.375em;
+    border: 1.5px solid var(--black);
+    border-radius: 0.225rem;
+    box-shadow: 1px 1px 0 0px var(--black);
+    &:focus {
+      outline: none;
+    }
+  }
+  .cardType {
+    width: 5rem;
+  }
+
+  .linkedCardsBox {
+    width: 100%;
+    height: 4rem;
+    border: 1.5px solid var(--black);
+    border-radius: 0.225rem;
+    @include shadow_box;
+  }
+}
